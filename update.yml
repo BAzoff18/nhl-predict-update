@@ -1,4 +1,4 @@
-name: Update NHL Predictions
+name: nhl-prediction-update
 
 on:
   schedule:
