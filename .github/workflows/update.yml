@@ -1,0 +1,36 @@
+name: Update NHL Predictions
+
+on:
+  workflow_dispatch:   # allow manual run
+  schedule:
+    - cron: '0 10 * * *'  # run every day at 10:00 UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # allow pushing CSV back
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install pandas requests scikit-learn
+
+    - name: Run prediction script
+      run: python nhl_predict_full.py
+
+    - name: Commit updated data
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git add data/nhl_predictions.csv || true
+        git commit -m "Update predictions" || echo "No changes to commit"
+        git push
